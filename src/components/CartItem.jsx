@@ -7,7 +7,6 @@ export default function CartItem({
   onIncrease,
   onDecrease,
 }) {
-  console.log(price);
   return (
     <li className="cart-item">
       <p>
