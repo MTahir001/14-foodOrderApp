@@ -5,6 +5,14 @@ import Button from "./UI/Button";
 import { useContext } from "react";
 import UserProgressContext from "../store/UserProgressContext";
 import CartContext from "../store/CartContext";
+import useHttp from "../hook/useHttp";
+
+const requestConfig = {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
 export default function Checkout() {
   const userProgressCtx = useContext(UserProgressContext);
@@ -17,24 +25,24 @@ export default function Checkout() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+  const { data, error, isLoading, sendRequest } = useHttp(
+    "http://localhost:3000/orders",
+    requestConfig
+  );
 
   function handleSubmit(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
     const customerData = Object.fromEntries(fd.entries());
 
-    fetch("http://localhost:3000/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    sendRequest(
+      JSON.stringify({
         order: {
           items: cartCtx.items,
           customer: customerData,
         },
-      }),
-    });
+      })
+    );
   }
   return (
     <Modal open={userProgressCtx.progress === "checkout"} onClose={handleClose}>
