@@ -10,7 +10,6 @@ export default function Meals() {
     error,
     isLoading,
   } = useHttp("http://localhost:3000/meals", requestConfig, []);
-  console.log(loadedMeals);
 
   if (isLoading) {
     return <p className="center">Fetching Meals</p>;
