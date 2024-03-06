@@ -22,6 +22,11 @@ export default function Checkout() {
   function handleClose() {
     userProgressCtx.hideCheckout();
   }
+
+  function handleFinish() {
+    userProgressCtx.hideCheckout();
+    cartCtx.clearCart();
+  }
   const cartTotal = cartCtx.items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -62,13 +67,13 @@ export default function Checkout() {
     return (
       <Modal
         open={userProgressCtx.progress === "checkout"}
-        onClose={handleClose}
+        onClose={handleFinish}
       >
         <h2>Success!</h2>
         <p>Order submitted successfully</p>
         <p>sending mail within next few minutes, pls check the details</p>
         <p className="modal-actions">
-          <Button onClick={handleClose}>Okay</Button>
+          <Button onClick={handleFinish}>Okay</Button>
         </p>
       </Modal>
     );
