@@ -6,6 +6,7 @@ import { useContext } from "react";
 import UserProgressContext from "../store/UserProgressContext";
 import CartContext from "../store/CartContext";
 import useHttp from "../hook/useHttp";
+import Error from "./Error";
 
 const requestConfig = {
   method: "POST",
@@ -25,10 +26,12 @@ export default function Checkout() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const { data, error, isLoading, sendRequest } = useHttp(
-    "http://localhost:3000/orders",
-    requestConfig
-  );
+  const {
+    data,
+    error,
+    isLoading: isSending,
+    sendRequest,
+  } = useHttp("http://localhost:3000/orders", requestConfig);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -44,6 +47,17 @@ export default function Checkout() {
       })
     );
   }
+  let actions = (
+    <>
+      <Button type="button" textOnly onClick={handleClose}>
+        Close
+      </Button>
+      <Button>Submit Order</Button>
+    </>
+  );
+  if (isSending) {
+    actions = <span>Sending the data, pls wait...</span>;
+  }
   return (
     <Modal open={userProgressCtx.progress === "checkout"} onClose={handleClose}>
       <form onSubmit={handleSubmit}>
@@ -56,12 +70,10 @@ export default function Checkout() {
           <Input label="Postal Code" id="postal-code" type="text" />
           <Input label="City" id="city" type="text" />
         </div>
-        <p className="modal-actions">
-          <Button type="button" textOnly onClick={handleClose}>
-            Close
-          </Button>
-          <Button>Submit Order</Button>
-        </p>
+        {error && (
+          <Error title="Failed to submit the request" message={error} />
+        )}
+        <p className="modal-actions">{actions}</p>
       </form>
     </Modal>
   );
